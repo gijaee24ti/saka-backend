@@ -14,7 +14,7 @@ class MenuController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $menus = Menu::query()
+        $query = Menu::query()
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = '%'.$request->string('search').'%';
                 $query->where(fn ($nested) => $nested
@@ -22,7 +22,13 @@ class MenuController extends Controller
                     ->orWhere('description', 'like', $search));
             })
             ->when($request->filled('category'), fn ($query) => $query->where('category', $request->string('category')))
-            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')));
+
+        if ($request->boolean('all')) {
+            return response()->json(['data' => $query->orderBy('id')->get()]);
+        }
+
+        $menus = $query
             ->orderBy('id')
             ->paginate($this->perPage($request));
 

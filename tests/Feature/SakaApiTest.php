@@ -136,25 +136,17 @@ class SakaApiTest extends TestCase
         $this->assertSame('2026-06-01', $feedback->feedback_date->format('Y-m-d'));
     }
 
-    public function test_literan_and_donut_business_rules_are_enforced(): void
+    public function test_master_products_can_be_added_to_stocks(): void
     {
         $this->actingAsAdmin();
         $regular = $this->outlet('Cabang Biasa');
-        $literan = $this->menu('Literan Test', 'Literan');
-        $donut = $this->menu('Donat', 'Snack');
+        $matcha = $this->menu('Matcha Latte', 'Non Coffee');
 
-        $this->postJson('/api/admin/stocks', [
-            'outlet_id' => $regular->id, 'menu_id' => $literan->id, 'stock_status' => 'Tersedia',
-        ])->assertUnprocessable();
-
-        $this->postJson('/api/admin/stocks', [
-            'outlet_id' => $regular->id, 'menu_id' => $donut->id, 'stock_status' => 'Tersedia',
-        ])->assertUnprocessable();
-
-        $dahlia = $this->outlet('OUTLET SAKA DAHLIA');
-        $this->postJson('/api/admin/stocks', [
-            'outlet_id' => $dahlia->id, 'menu_id' => $literan->id, 'stock_status' => 'Tersedia',
-        ])->assertCreated();
+        $response = $this->postJson('/api/admin/stocks', [
+            'outlet_id' => $regular->id, 'menu_id' => $matcha->id, 'quantity' => 20, 'stock_status' => 'Tersedia',
+        ]);
+        
+        $response->assertCreated()->assertJsonPath('data.quantity', 20);
     }
 
     public function test_duplicate_stock_is_rejected(): void

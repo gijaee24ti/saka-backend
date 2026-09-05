@@ -54,7 +54,7 @@ class StockController extends Controller
     public function update(Request $request, Stock $stock): JsonResponse
     {
         $data = $this->validated($request, $stock);
-        $complete = array_merge($stock->only(['outlet_id', 'menu_id', 'rider_id', 'stock_status', 'note']), $data);
+        $complete = array_merge($stock->only(['outlet_id', 'menu_id', 'rider_id', 'quantity', 'stock_status', 'note']), $data);
         $this->assertBusinessRules($complete);
         $stock->update($data);
 
@@ -81,6 +81,7 @@ class StockController extends Controller
                 Rule::unique('stocks', 'menu_id')->where(fn ($query) => $query->where('outlet_id', $outletId))->ignore($stock),
             ],
             'rider_id' => ['sometimes', 'nullable', 'exists:riders,id'],
+            'quantity' => ['sometimes', 'integer', 'min:0'],
             'stock_status' => ['sometimes', 'in:Tersedia,Tidak Tersedia'],
             'note' => ['sometimes', 'nullable', 'string', 'max:2000'],
         ]);
@@ -90,14 +91,6 @@ class StockController extends Controller
     {
         $outlet = Outlet::findOrFail($data['outlet_id']);
         $menu = Menu::findOrFail($data['menu_id']);
-
-        if ($menu->category === 'Literan' && $outlet->branch !== 'OUTLET SAKA DAHLIA') {
-            throw ValidationException::withMessages(['menu_id' => 'Produk literan hanya tersedia di OUTLET SAKA DAHLIA.']);
-        }
-
-        if (($menu->name === 'Donat' || $menu->category === 'Snack') && ! in_array($outlet->branch, self::DONUT_BRANCHES, true)) {
-            throw ValidationException::withMessages(['menu_id' => 'Donat hanya tersedia di cabang yang ditentukan.']);
-        }
 
         if (! empty($data['rider_id'])) {
             $rider = Rider::findOrFail($data['rider_id']);

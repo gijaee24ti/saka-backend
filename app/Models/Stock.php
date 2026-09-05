@@ -10,6 +10,7 @@ class Stock extends Model
         'outlet_id',
         'menu_id',
         'rider_id',
+        'quantity',
         'stock_status',
         'note',
     ];
@@ -32,6 +33,7 @@ class Stock extends Model
     protected function casts(): array
     {
         return [
+            'quantity' => 'integer',
             'updated_at' => 'datetime',
         ];
     }

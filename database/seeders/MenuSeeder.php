@@ -49,7 +49,7 @@ class MenuSeeder extends Seeder
                 'cup_price' => 10000,
                 'price_500' => 0,
                 'price_1l' => 0,
-                'description' => 'Minuman susu manis berwarna pink dengan rasa lembut, segar, dan cocok untuk pelanggan yang tidak minum kopi.',
+                'description' => 'Minuman susu manis berwarna pink dengan rasa lembut, segar.',
                 'durability' => 'Produk cup dibuat fresh di hari yang sama dan disarankan langsung diminum. Jangan disimpan di suhu ruang terlalu lama karena kualitas rasa bisa menurun. Jika pelanggan banyak bertanya, arahkan untuk menghubungi WhatsApp Saka.',
                 'image' => '/img/pinkymilky.jpeg',
                 'status' => 'Aktif',

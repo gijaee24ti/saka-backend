@@ -36,7 +36,7 @@ class PublicCatalogController extends Controller
     public function stocks(): JsonResponse
     {
         $stocks = Stock::query()
-            ->select(['id', 'outlet_id', 'menu_id', 'stock_status', 'updated_at'])
+            ->select(['id', 'outlet_id', 'menu_id', 'quantity', 'stock_status', 'updated_at'])
             ->with(['menu:id,name,category,status'])
             ->orderBy('outlet_id')
             ->get();

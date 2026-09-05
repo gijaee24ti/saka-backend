@@ -55,6 +55,7 @@ class StockSeeder extends Seeder
                         ],
                         [
                             'rider_id' => $rider?->id,
+                            'quantity' => 20,
                             'stock_status' => 'Tersedia',
                             'note' => null,
                         ]

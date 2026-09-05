@@ -14,7 +14,7 @@ class FeedbackController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $feedback = Feedback::query()
+        $query = Feedback::query()
             ->with('outlet')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = '%'.$request->string('search').'%';
@@ -25,8 +25,13 @@ class FeedbackController extends Controller
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
             ->when($request->filled('category'), fn ($query) => $query->where('category', $request->string('category')))
             ->latest('feedback_date')
-            ->latest('id')
-            ->paginate($this->perPage($request));
+            ->latest('id');
+
+        if ($request->boolean('all')) {
+            return response()->json(['data' => $query->get()]);
+        }
+
+        $feedback = $query->paginate($this->perPage($request));
 
         return response()->json($feedback);
     }

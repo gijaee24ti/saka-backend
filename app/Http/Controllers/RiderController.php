@@ -15,14 +15,20 @@ class RiderController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $riders = Rider::query()
+        $query = Rider::query()
             ->with('outlet')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = '%'.$request->string('search').'%';
                 $query->where(fn ($nested) => $nested->where('name', 'like', $search)->orWhere('username', 'like', $search));
             })
             ->when($request->filled('account_status'), fn ($query) => $query->where('account_status', $request->string('account_status')))
-            ->when($request->filled('operational_status'), fn ($query) => $query->where('operational_status', $request->string('operational_status')))
+            ->when($request->filled('operational_status'), fn ($query) => $query->where('operational_status', $request->string('operational_status')));
+
+        if ($request->boolean('all')) {
+            return response()->json(['data' => $query->orderBy('id')->get()]);
+        }
+
+        $riders = $query
             ->orderBy('id')
             ->paginate($this->perPage($request));
 
